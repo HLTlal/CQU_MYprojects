@@ -62,14 +62,14 @@ module aludec(
 			endcase
 */			    
 			//memory
-			`LB: alucontrol<=`MEM_CONTROL;
-			`LBU: alucontrol<=`MEM_CONTROL;
-			`LH: alucontrol<=`MEM_CONTROL;
-			`LHU: alucontrol<=`MEM_CONTROL;
-			`LW: alucontrol<=`MEM_CONTROL;
-			`SB: alucontrol<=`MEM_CONTROL;
-			`SH: alucontrol<=`MEM_CONTROL;
-			`SW: alucontrol<=`MEM_CONTROL;
+			`LB: alucontrol<=`ADDU_CONTROL;
+			`LBU: alucontrol<=`ADDU_CONTROL;
+			`LH: alucontrol<=`ADDU_CONTROL;
+			`LHU: alucontrol<=`ADDU_CONTROL;
+			`LW: alucontrol<=`ADDU_CONTROL;
+			`SB: alucontrol<=`ADDU_CONTROL;
+			`SH: alucontrol<=`ADDU_CONTROL;
+			`SW: alucontrol<=`ADDU_CONTROL;
 			
 			//Invagination
 			//privilege
@@ -114,9 +114,9 @@ module aludec(
 			    //Invagination
 			    //privilege
 			    
-			    default: alucontrol <= `NOP_CONTROL;
+			    default: alucontrol <= 5'b0;
 			endcase
-			default: alucontrol <= `NOP_CONTROL;
+			default: alucontrol <= 5'b0;
 		endcase
 	end
 endmodule
