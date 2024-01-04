@@ -38,7 +38,7 @@ module datapath(
 	output wire flushE,
 	//mem stage
 	input wire memtoregM,
-	input wire regwriteM,mfhiM,mfloM,
+	input wire regwriteM,
 	output wire[31:0] aluoutM,writedataM,
 	input wire[31:0] readdataM,
 	//writeback stage
@@ -59,11 +59,14 @@ module datapath(
 	wire [31:0] srcaD,srca2D,srcbD,srcb2D;
 	//execute stage
 	wire [1:0] forwardaE,forwardbE;
-	wire [4:0] rsE,rtE,rdE;
+	wire [4:0] rsE,rtE,rdE,saE;
 	wire [4:0] writeregE;
 	wire [31:0] signimmE;
 	wire [31:0] srcaE,srca2E,srcbE,srcb2E,srcb3E;
+	wire [31:0] hi_oE,lo_oE,hi_outE,lo_outE;
 	wire [31:0] aluoutE;
+	wire div_sign,div_start,div_ready;
+	wire [63:0] div_result;
 	wire overflowE;
 	//mem stage
 	wire [4:0] writeregM;
@@ -84,9 +87,9 @@ module datapath(
 		rsE,rtE,
 		writeregE,
 		regwriteE,
-		memtoregE,
+		memtoregE,alucontrolE,div_ready,
 		forwardaE,forwardbE,
-		flushE,
+		flushE,stallE,
 		//mem stage
 		writeregM,
 		regwriteM,
@@ -114,7 +117,7 @@ module datapath(
 	flopenr #(32) r1D(clk,rst,~stallD,pcplus4F,pcplus4D);
 	flopenrc #(32) r2D(clk,rst,~stallD,flushD,instrF,instrD);
 	
-	signext se(instrD[15:0],signimmD);
+	signext se(instrD[15:0],instrD[29:28],signimmD);
 	sl2 immsh(signimmD,signimmshD);
 	adder pcadd2(pcplus4D,signimmshD,pcbranchD);
 	mux2 #(32) forwardamux(srcaD,aluoutM,forwardaD,srca2D);
@@ -129,28 +132,37 @@ module datapath(
 	assign saD = instrD[10:6];
 
 	//execute stage
-	floprc #(32) r1E(clk,rst,flushE,srcaD,srcaE);
-	floprc #(32) r2E(clk,rst,flushE,srcbD,srcbE);
-	floprc #(32) r3E(clk,rst,flushE,signimmD,signimmE);
-	floprc #(5) r4E(clk,rst,flushE,rsD,rsE);
-	floprc #(5) r5E(clk,rst,flushE,rtD,rtE);
-	floprc #(5) r6E(clk,rst,flushE,rdD,rdE);
-	floprc #(5) r7E(clk,rst,flushE,saD,saE);
+	flopenrc #(32) r1E(clk,rst,~stallE,flushE,srcaD,srcaE);
+	flopenrc #(32) r2E(clk,rst,~stallE,flushE,srcbD,srcbE);
+	flopenrc #(32) r3E(clk,rst,~stallE,flushE,signimmD,signimmE);
+	flopenrc #(5) r4E(clk,rst,~stallE,flushE,rsD,rsE);
+	flopenrc #(5) r5E(clk,rst,~stallE,flushE,rtD,rtE);
+	flopenrc #(5) r6E(clk,rst,~stallE,flushE,rdD,rdE);
+	flopenrc #(5) r7E(clk,rst,~stallE,flushE,saD,saE);
 
 	mux3 #(32) forwardaemux(srcaE,resultW,aluoutM,forwardaE,srca2E);
 	mux3 #(32) forwardbemux(srcbE,resultW,aluoutM,forwardbE,srcb2E);
+	
 	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);//alu的b的来源于立即数还是regfile
-	alu alu(srca2E,srcb3E,alucontrolE,saE,hilo_o,hilo_out,aluoutE,overflowE);
 	mux2 #(5) wrmux(rtE,rdE,regdstE,writeregE);//写到regfile的地址为rd（Rtype）
 	//还是rt（lb,lbu,lh,lhu,lw,sb,sh,sw,andi,xori,ori,lui,addi,addiu,slti,sltiu）
 	//writereg是要写入regfile的寄存器地址
+	alu alu(srca2E,srcb3E,alucontrolE,saE,hi_oE,lo_oE,hi_outE,lo_outE,aluoutE,overflowE);
+	//除法
+	assign div_sign=(alucontrolE==`DIV_CONTROL)? 1'b1:1'b0;
+	assign div_start=(alucontrolE==`DIV_CONTROL | alucontrolE==`DIVU_CONTROL & ~div_ready) ? 1'b1:1'b0;
+	div div(clk,rst,div_sign,srca2E,srcb3E,div_start,1'b0,div_result,div_ready);
+		
+    hilo_reg hilom(clk,rst,hilo_enE,div_ready,alucontrolE,div_result,hi_outE,lo_outE,hi_oE,lo_oE );//选择输出hi_lo_o
 
 	//mem stage
 	flopr #(32) r1M(clk,rst,srcb2E,writedataM);
 	flopr #(32) r2M(clk,rst,aluoutE,aluoutM);
 	flopr #(5) r3M(clk,rst,writeregE,writeregM);
+//	flopr #(32) r4M(clk,rst,hi_outE,hi_outM);
+//	flopr #(32) r5M(clk,rst,lo_outE,lo_outM);
 	
-	hilo_reg hilom(clk,rst,hilo_enE,mfhiM,mfloM,hilo_out,hi_lo_o,hilo_o );//选择输出hi_lo_o
+	
 
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);

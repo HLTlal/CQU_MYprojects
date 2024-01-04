@@ -22,8 +22,9 @@
 
 module signext(
 	input wire[15:0] a,
+	input wire [1:0] signal,//inst[29:28]==2'b11
 	output wire[31:0] y
     );
 
-	assign y = {{16{a[15]}},a};
+	assign y = (signal==2'b11)? {{16{1'b0}},a} : {{16{a[15]}},a};
 endmodule

@@ -61,21 +61,21 @@ module maindec(//id.v
                     `BGEZAL:controls <= 20'b11000000;//BGEZAL   
                     default:controls <= 20'b0;     
              endcase                    
-             `LB:controls <= 20'b10100000;//LB
-             `LBU:controls <= 20'b10100000;//LBU
-             `LH:controls <= 20'b10100000;//LH
-             `LHU:controls <= 20'b10100000;//LHU
+             `LB:controls <= 20'b10100100;//LB
+             `LBU:controls <= 20'b10100100;//LBU
+             `LH:controls <= 20'b10100100;//LH
+             `LHU:controls <= 20'b10100100;//LHU
              `LW:controls <= 20'b10100100;//LW
-             `SB:controls <= 20'b00100000;//SB
-             `SH:controls <= 20'b00100000;//SH
+             `SB:controls <= 20'b00101000;//SB
+             `SH:controls <= 20'b00101000;//SH
              `SW:controls <= 20'b00101000;//SW
 
              `NOP:case(funct)
                     //HILO
-                    `MFHI:controls <= 20'b11101000;//MFHI
-                    `MFLO:controls <= 20'b11101000;//MFLO                  
-                    `MTHI:controls <= 20'b00101001;//MTHI
-                    `MTLO:controls <= 20'b00101001;//MTLO
+                    `MFHI:controls <= 20'b11000000;//MFHI
+                    `MFLO:controls <= 20'b11000000;//MFLO                  
+                    `MTHI:controls <= 20'b00000001;//MTHI
+                    `MTLO:controls <= 20'b00000001;//MTLO
                     //Arithmetic
                     `MULT:controls <= 20'b00101001;//MULT
                     `MULTU:controls <= 20'b00101001;//MULTU
