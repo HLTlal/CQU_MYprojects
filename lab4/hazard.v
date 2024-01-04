@@ -25,15 +25,16 @@ module hazard(
 	output wire stallF,
 	//decode stage
 	input wire[4:0] rsD,rtD,
-	input wire branchD,
-	output wire forwardaD,forwardbD,
+	input wire branchD,jumpD,jrD,
+	input wire [4:0] alucontrolD,
+	output wire forwardaD,forwardbD,jrlforwardaD,jrlforwardbD,
 	output wire stallD,
 	//execute stage
 	input wire[4:0] rsE,rtE,
 	input wire[4:0] writeregE,
 	input wire regwriteE,
 	input wire memtoregE,
-	input wire [7:0] alucontrolE,
+	input wire [4:0] alucontrolE,
 	input wire div_ready,
 	output reg[1:0] forwardaE,forwardbE,
 	output wire flushE,stallE,
@@ -52,6 +53,11 @@ module hazard(
 	//forwarding sources to D stage (branch equality)
 	assign forwardaD = (rsD != 0 & rsD == writeregM & regwriteM);
 	assign forwardbD = (rtD != 0 & rtD == writeregM & regwriteM);
+	//forwarding sources to D stage(b and jr for lw)
+	assign jrlforwardaD = (jrD | branchD) && ((memtoregE && (writeregE==rsD))
+	                                   ||(memtoregM && (writeregM==rsD)));
+	assign jrlforwardbD=(jrD | branchD) && ((memtoregE && (writeregE==rtD))
+	                                   ||(memtoregM && (writeregM==rtD)));
 	
 	//forwarding sources to E stage (ALU)
 

@@ -95,6 +95,14 @@ module alu(//ex.v
             `MFLO_CONTROL:begin y<=lo_in[31:0];  overflow <= 0; end //mflo
             `MTHI_CONTROL :begin hi_out<=a; lo_out<=lo_in[31:0]; overflow <= 0; end //mthi
             `MTLO_CONTROL:begin lo_out<=a; hi_out<=hi_in[31:0];  overflow <= 0; end //mtlo
+            `LB_CONTROL: y= y_sum;
+			`LBU_CONTROL: y= y_sum;
+			`LH_CONTROL: y= y_sum;
+			`LHU_CONTROL: y= y_sum;
+			`LW_CONTROL: y= y_sum;
+			`SB_CONTROL: y= y_sum;
+			`SH_CONTROL: y= y_sum;
+			`SW_CONTROL: y= y_sum;
 //            `MFC0_CONTROL
 //            `MTC0_CONTROL 
             

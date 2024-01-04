@@ -19,11 +19,22 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
+`include "defines2.vh"
 module eqcmp(
 	input wire [31:0] a,b,
-	output wire y
+	input wire[5:0] alucontrolD,
+	output reg y
     );
-
-	assign y = (a == b) ? 1 : 0;
+    always@ (*) begin
+        case (alucontrolD)
+            `BEQ_CONTROL: y=(a==b) ?1:0;
+            `BGTZ_CONTROL: y=((a[31]==0) && (a!=32'b0)) ? 1:0;
+            `BLEZ_CONTROL: y=((a[31]==1) || (a==32'b0)) ? 1:0;
+            `BNE_CONTROL: y=(a!=b) ?1:0;
+            `BLTZ_CONTROL: y=(a[31]==1) ? 1:0;
+            `BLTZAL_CONTROL: y=(a[31]==1) ? 1:0;
+            `BGEZ_CONTROL: y=(a[31]==0) ? 1:0;
+            `BGEZAL_CONTROL: y=(a[31]==0) ? 1:0;                  
+        endcase
+    end
 endmodule
