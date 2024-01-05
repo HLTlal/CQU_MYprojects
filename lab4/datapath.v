@@ -43,38 +43,45 @@ module datapath(
 	input wire regwriteM,
 	output wire[31:0] aluoutM,writedataM,
 	input wire[31:0] readdataM,
+	output wire [3:0] memwriteM,
 	//writeback stage
 	input wire memtoregW,
-	input wire regwriteW
+	input wire regwriteW,
+	input wire [31:0] resultW
     );
 	
 	//fetch stage
 	wire stallF;
 	//FD
-	wire [31:0] pcnextFD,pcnextbrFD,pcplus4F,pcbranchD;
+	wire [31:0] pcnextFD,pcnextbrFD,pcplus4F,pcbranchD,pcnext_tempFD,pcplus8F;
 	//decode stage
-	wire [31:0] pcplus4D,instrD;
+	wire [31:0] pcplus4D,instrD,pcplus8D;
 	wire forwardaD,forwardbD;
 	wire [4:0] rsD,rtD,rdD,saD;
 	wire flushD,stallD; 
 	wire [31:0] signimmD,signimmshD;
 	wire [31:0] srcaD,srca2D,srca3DsrcbD,srcb2D,srcb3D;
 	//execute stage
+	wire [31:0] pcplus8E;
 	wire [1:0] forwardaE,forwardbE;
 	wire [4:0] rsE,rtE,rdE,saE;
-	wire [4:0] writeregE,jalwriteregE;
+	wire stallE;
+	wire [4:0] writeregE,writereg2E,jalwriteregE;
 	wire [31:0] signimmE;
 	wire [31:0] srcaE,srca2E,srcbE,srcb2E,srcb3E;
 	wire [31:0] hi_oE,lo_oE,hi_outE,lo_outE;
-	wire [31:0] aluoutE;
+	wire [31:0] aluoutE,aluout2E;
 	wire div_sign,div_start,div_ready;
 	wire [63:0] div_result;
 	wire overflowE;
 	//mem stage
 	wire [4:0] writeregM;
+	wire [31:0] alucontrolM;
+	wire overflowM;
 	//writeback stage
 	wire [4:0] writeregW;
-	wire [31:0] aluoutW,readdataW,resultW;
+	wire [31:0] aluoutW,readdataW,lwresultW;
+	wire [31:0] alucontrolW;
 
 	//hazard detection
 	hazard h(
@@ -82,7 +89,8 @@ module datapath(
 		stallF,
 		//decode stage
 		rsD,rtD,
-		branchD,
+		branchD,jumpD,jrD,
+		alucontrolD,
 		forwardaD,forwardbD,jrlforwardaD,jrlforwardbD,
 		stallD,
 		//execute stage
@@ -165,8 +173,8 @@ module datapath(
 	div div(clk,rst,div_sign,srca2E,srcb3E,div_start,1'b0,div_result,div_ready);	
     hilo_reg hilom(clk,rst,hilo_enE,div_ready,alucontrolE,div_result,hi_outE,lo_outE,hi_oE,lo_oE );//选择输出hi_lo_o
     //写寄存器
-    assign jalwritereg=(alucontrolE==`JALR_CONTROL & writeregE==0) ? 5'b11111: writeregE;//jalr的rd默认为0则为31号寄存器
-    mux2 #(5) jalwrmux(jalwritereg,5'b11111,jalE|balE,writereg2E);
+    assign jalwriteregE=(alucontrolE==`JALR_CONTROL & writeregE==0) ? 5'b11111: writeregE;//jalr的rd默认为0则为31号寄存器
+    mux2 #(5) jalwrmux(jalwriteregE,5'b11111,jalE|balE,writereg2E);
     mux2 #(32) wrdmux(aluoutE,pcplus8E,jalE|jrE|balE,aluout2E);
     
 	//mem stage
@@ -174,13 +182,19 @@ module datapath(
 	flopr #(32) r2M(clk,rst,aluout2E,aluoutM);
 	flopr #(5) r3M(clk,rst,writereg2E,writeregM);
 	flopr #(32) r4M(clk,rst,overflowE,overflowM);
+	flopr #(8) r5M(clk,rst,alucontrolE,alucontrolM);
 //	flopr #(32) r5M(clk,rst,lo_outE,lo_outM);
-	
-	
+
+//	lsaddr ls_addr(aluoutM,alucontrolM,laddrerrM,saddrerrM);
+    smem swsel(aluoutM,alucontrolM,memwriteM);
 
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);
 	flopr #(32) r2W(clk,rst,readdataM,readdataW);
 	flopr #(5) r3W(clk,rst,writeregM,writeregW);
-	mux2 #(32) resmux(aluoutW,readdataW,memtoregW,resultW);//控制Result 来源为 ALU 或数据存储器
+	flopr #(8) r4W(clk,rst,alucontrolM,alucontrolW);
+	
+	mux2 #(32) resmux(aluoutW,readdataW,memtoregW,lwresultW);//控制Result 来源为 ALU 或数据存储器
+    lmem lwsel(aluoutW,alucontrolW,lwresultW,resultW);
+
 endmodule
