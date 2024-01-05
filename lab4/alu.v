@@ -22,7 +22,7 @@
 
 module alu(//ex.v
 	input wire[31:0] a,b,
-	input wire[4:0] alucontrol,
+	input wire[5:0] alucontrol,
 	input wire[4:0] sa,
 	input [31:0] hi_in,lo_in,
     output reg [31:0] hi_out,lo_out,

@@ -26,7 +26,7 @@ module hazard(
 	//decode stage
 	input wire[4:0] rsD,rtD,
 	input wire branchD,jumpD,jrD,
-	input wire [4:0] alucontrolD,
+	input wire [5:0] alucontrolD,
 	output wire forwardaD,forwardbD,jrlforwardaD,jrlforwardbD,
 	output wire stallD,
 	//execute stage
@@ -34,7 +34,7 @@ module hazard(
 	input wire[4:0] writeregE,
 	input wire regwriteE,
 	input wire memtoregE,
-	input wire [4:0] alucontrolE,
+	input wire [5:0] alucontrolE,
 	input wire div_ready,
 	output reg[1:0] forwardaE,forwardbE,
 	output wire flushE,stallE,
@@ -42,7 +42,7 @@ module hazard(
 	input wire[4:0] writeregM,
 	input wire regwriteM,
 	input wire memtoregM,
-
+    input wire [5:0] alucontrolM,
 	//write back stage
 	input wire[4:0] writeregW,
 	input wire regwriteW
@@ -93,7 +93,8 @@ module hazard(
 				(writeregE == rsD | writeregE == rtD) |
 				memtoregM &
 				(writeregM == rsD | writeregM == rtD));
-	assign #1 divstallE=((alucontrolE==`DIV_CONTROL)|(alucontrolE==`DIVU_CONTROL))&(~div_ready);
+	assign #1 divstallE=((alucontrolD==`DIV_CONTROL)|(alucontrolD==`DIVU_CONTROL))
+	                                   &(~div_ready);
 	assign #1 stallD = lwstallD | branchstallD|divstallE;
 	assign #1 stallF = stallD;
 	assign #1 stallE = divstallE;

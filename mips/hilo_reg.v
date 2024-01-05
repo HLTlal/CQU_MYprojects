@@ -23,7 +23,7 @@
 module hilo_reg(
 	input  wire clk,rst,we,
 	input wire diven,
-	input wire [7:0] alucontrol,
+	input wire [5:0] alucontrol,
 	input wire [63:0] div_result,
 	input  wire [31:0] hi_i,lo_i,
 	output wire [31:0] hi_o,lo_o
