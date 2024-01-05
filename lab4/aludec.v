@@ -24,13 +24,10 @@ module aludec(
 	input wire[5:0] funct,
 	input wire[5:0] aluop,
 	input wire[4:0] rt,
-	output reg[7:0] alucontrol
+	output reg[5:0] alucontrol
     );
 	always @(*) begin
-		case (aluop)
-		    //test
-		    //`RELU: alucontrol<=`RELU_OP;
-		    
+		case (aluop)	    
 			//logic
 			`ANDI: alucontrol<=`AND_CONTROL;
 			`XORI: alucontrol<=`XOR_CONTROL;
@@ -43,33 +40,32 @@ module aludec(
 			`ADDI: alucontrol<=`ADD_CONTROL;
 			`ADDIU: alucontrol<=`ADDU_CONTROL;
 			`SLTI: alucontrol<=`SLT_CONTROL;
-			`SLTIU: alucontrol<=`SLTU_CONTROL;
-/*			
-			//jump
-			`J: alucontrol<=`J_OP;
-			`JAL: alucontrol<=`JAL_OP;
-			//branch
-			`BEQ: alucontrol<=`BEQ_OP;
-			`BGTZ: alucontrol<=`BGTZ_OP;
-			`BLEZ: alucontrol<=`BLEZ_OP;
-			`BNE: alucontrol<=`BEN_OP;
-			`B_ADDITION: case(rt)
-			    `BLTZ: alucontrol<=`BLTZ_OP;
-			    `BLTZAL: alucontrol<=`BLTZAL_OP;
-			    `BGEZ: alucontrol<=`BGEZ_OP;
-			    `BGEZAL: alucontrol<=`BGEZAL_OP;
-			    default: alucontrol <= `NOP_OP;
-			endcase
-*/			    
+			`SLTIU:alucontrol<=`SLTU_CONTROL;
+		    
+		    //j and b
+		    `J:alucontrol<=`J_CONTROL;
+            `JAL:alucontrol<=`JAL_CONTROL;
+            `BEQ:alucontrol<=`BEQ_CONTROL;
+            `BGTZ: alucontrol<=`BGTZ_CONTROL;
+            `BLEZ: alucontrol<=`BLEZ_CONTROL;
+            `BNE: alucontrol<=`BNE_CONTROL;
+            `REGIMM_INST:case(rt)
+                    `BLTZ: alucontrol<=`BLTZ_CONTROL;
+                    `BLTZAL: alucontrol<=`BLTZAL_CONTROL;
+                    `BGEZ: alucontrol<=`BGEZ_CONTROL;
+                    `BGEZAL: alucontrol<=`BGEZAL_CONTROL;
+                    default:alucontrol <= 6'b0;    
+             endcase                    
+		    
 			//memory
-			`LB: alucontrol<=`ADDU_CONTROL;
-			`LBU: alucontrol<=`ADDU_CONTROL;
-			`LH: alucontrol<=`ADDU_CONTROL;
-			`LHU: alucontrol<=`ADDU_CONTROL;
-			`LW: alucontrol<=`ADDU_CONTROL;
-			`SB: alucontrol<=`ADDU_CONTROL;
-			`SH: alucontrol<=`ADDU_CONTROL;
-			`SW: alucontrol<=`ADDU_CONTROL;
+			`LB: alucontrol<=`LB_CONTROL;
+			`LBU: alucontrol<=`LBU_CONTROL;
+			`LH: alucontrol<=`LH_CONTROL;
+			`LHU: alucontrol<=`LHU_CONTROL;
+			`LW: alucontrol<=`LW_CONTROL;
+			`SB: alucontrol<=`SB_CONTROL;
+			`SH: alucontrol<=`SH_CONTROL;
+			`SW: alucontrol<=`SW_CONTROL;
 			
 			//Invagination
 			//privilege
@@ -106,17 +102,12 @@ module aludec(
                 `MULTU: alucontrol <= `MULTU_CONTROL;
                 `DIV: alucontrol <= `DIV_CONTROL;
                 `DIVU: alucontrol <= `DIVU_CONTROL;
-/*			    
-			    //jump
-			    `JR: alucontrol <= `JR_OP;
-                `JALR: alucontrol <= `JALR_OP;
-*/                
-			    //Invagination
-			    //privilege
 			    
-			    default: alucontrol <= 5'b0;
+			    `JALR:alucontrol <= `JALR_CONTROL;
+                `JR:alucontrol <= `JR_CONTROL;
+			    default: alucontrol <= 6'b0;
 			endcase
-			default: alucontrol <= 5'b0;
+			default: alucontrol <= 6'b0;
 		endcase
 	end
 endmodule

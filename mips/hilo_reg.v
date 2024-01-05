@@ -22,6 +22,9 @@
 
 module hilo_reg(
 	input  wire clk,rst,we,
+	input wire diven,
+	input wire [5:0] alucontrol,
+	input wire [63:0] div_result,
 	input  wire [31:0] hi_i,lo_i,
 	output wire [31:0] hi_o,lo_o
     );
@@ -32,8 +35,14 @@ module hilo_reg(
 			hi <= 0;
 			lo <= 0;
 		end else if (we) begin
-			hi <= hi_i;
-			lo <= lo_i;
+		    if(diven)begin
+		        hi<=div_result[63:32];
+		        lo<=div_result[31:0];
+		    end else if (alucontrol==`MTHI_CONTROL | alucontrol==`MTLO_CONTROL
+		     | alucontrol==`MULT_CONTROL | alucontrol==`MULTU_CONTROL) begin
+			     hi <= hi_i;
+			     lo <= lo_i;
+			end
 		end
 	end
 

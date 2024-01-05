@@ -31,6 +31,7 @@ module regfile(
 	reg [31:0] rf[31:0];
 
 	always @(negedge clk) begin
+	rf[0]=32'b0;
 		if(we3) begin
 			 rf[wa3] <= wd3;
 		end

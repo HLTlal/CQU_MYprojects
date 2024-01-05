@@ -25,68 +25,68 @@ module maindec(//id.v
 	input wire[5:0] funct,
 	input wire[4:0] rt,
 
-	output wire memtoreg,memwrite,
+	output wire memtoreg,
 	output wire branch,alusrc,
 	output wire regdst,regwrite,
-	output wire jump,
+	output wire jump,jal,jr,bal,
 	output wire hilo_en
     );
-	reg[20:0] controls;
-	assign {regwrite,regdst,alusrc,branch,memwrite,memtoreg,jump,hilo_en} = controls;
+	reg[9:0] controls;
+	assign {regwrite,regdst,alusrc,branch,memtoreg,jump,jal,jr,bal,hilo_en} = controls;
 	
 	always @(*) begin
 		case (op)
 			//I-type
 			//Logic
-			`ANDI:controls <= 20'b10100000;//ANDI
-			`ORI:controls <= 20'b10100000;//ORI
-			`XORI:controls <= 20'b10100000;//XORI
-			`LUI:controls <= 20'b10100000;//LUI
+			`ANDI:controls <= 10'b1010000000;//ANDI
+			`ORI:controls <= 10'b1010000000;//ORI
+			`XORI:controls <= 10'b1010000000;//XORI
+			`LUI:controls <= 10'b1010000000;//LUI
             //Arithmetic
-            `ADDI:controls <= 20'b10100000;//ADDI
-            `ADDIU:controls <= 20'b10100000;//ADDIU
-            `SLTI:controls <= 20'b10100000;//SLTI
-            `SLTIU:controls <= 20'b10100000;//SLTIU
+            `ADDI:controls <= 10'b1010000000;//ADDI
+            `ADDIU:controls <= 10'b1010000000;//ADDIU
+            `SLTI:controls <= 10'b1010000000;//SLTI
+            `SLTIU:controls <= 10'b1010000000;//SLTIU
             //J
-            `J:controls <= 20'b00000010;//J
-            `JAL:controls <= 20'b11000000;//JAL
-            `BEQ:controls <= 20'b00010001;//BEQ
-            `BGTZ:controls <= 20'b11000000;//BGTZ
-            `BLEZ:controls <= 20'b11000000;//BLEZ
-            `BNE:controls <= 20'b11000000;//BNE
+            `J:controls <= 10'b0000010000;//J
+            `JAL:controls <= 10'b1000001000;//JAL
+            `BEQ:controls <= 10'b0001000000;//BEQ
+            `BGTZ:controls <= 10'b0001000000;//BGTZ
+            `BLEZ:controls <= 10'b0001000000;//BLEZ
+            `BNE:controls <= 10'b0001000000;//BNE
             `REGIMM_INST:case(rt)
-                    `BLTZ:controls <= 20'b11000000;//BLTZ
-                    `BLTZAL:controls <= 20'b11000000;//BLTZAL
-                    `BGEZ:controls <= 20'b11000000;//BGEZ
-                    `BGEZAL:controls <= 20'b11000000;//BGEZAL   
-                    default:controls <= 20'b0;     
+                    `BLTZ:controls <= 10'b0001000000;//BLTZ
+                    `BLTZAL:controls <= 10'b1001000010;//BLTZAL
+                    `BGEZ:controls <= 10'b0001000000;//BGEZ
+                    `BGEZAL:controls <= 10'b1001000010;//BGEZAL   
+                    default:controls <= 10'b0;     
              endcase                    
-             `LB:controls <= 20'b10100000;//LB
-             `LBU:controls <= 20'b10100000;//LBU
-             `LH:controls <= 20'b10100000;//LH
-             `LHU:controls <= 20'b10100000;//LHU
-             `LW:controls <= 20'b10100100;//LW
-             `SB:controls <= 20'b00100000;//SB
-             `SH:controls <= 20'b00100000;//SH
-             `SW:controls <= 20'b00101000;//SW
+             `LB:controls <= 10'b1010100000;//LB
+             `LBU:controls <= 10'b1010100000;//LBU
+             `LH:controls <= 10'b1010100000;//LH
+             `LHU:controls <= 10'b1010100000;//LHU
+             `LW:controls <= 10'b1010100000;//LW
+             `SB:controls <= 10'b0010000000;//SB
+             `SH:controls <= 10'b0010000000;//SH
+             `SW:controls <= 10'b0010000000;//SW
 
              `NOP:case(funct)
                     //HILO
-                    `MFHI:controls <= 20'b11101000;//MFHI
-                    `MFLO:controls <= 20'b11101000;//MFLO                  
-                    `MTHI:controls <= 20'b00101001;//MTHI
-                    `MTLO:controls <= 20'b00101001;//MTLO
+                    `MFHI:controls <= 10'b1100000000;//MFHI
+                    `MFLO:controls <= 10'b1100000000;//MFLO                  
+                    `MTHI:controls <= 10'b0000000001;//MTHI
+                    `MTLO:controls <= 10'b0000000001;//MTLO
                     //Arithmetic
-                    `MULT:controls <= 20'b00101001;//MULT
-                    `MULTU:controls <= 20'b00101001;//MULTU
-                    `DIV:controls <= 20'b00101001;//DIV
-                    `DIVU:controls <= 20'b00101001;//DIVU
+                    `MULT:controls <= 10'b0000000001;//MULT
+                    `MULTU:controls <= 10'b0000000001;//MULTU
+                    `DIV:controls <= 10'b0000000001;//DIV
+                    `DIVU:controls <= 10'b0000000001;//DIVU
                     //J
-                    `JALR:controls <= 20'b00101000;//JALR
-                    `JR:controls <= 20'b00101000;//JR
-			        default:controls <= 20'b11000000;//R-TYPE     
+                    `JALR:controls <= 10'b1100000100;//JALR
+                    `JR:controls <= 10'b0000000100;//JR
+			        default:controls <= 10'b1100000000;//R-TYPE     
              endcase 
-			default:  controls <= 20'b00000000;//illegal op
+			default:  controls <= 10'b00000000;//illegal op
 		endcase
 	end
 endmodule
