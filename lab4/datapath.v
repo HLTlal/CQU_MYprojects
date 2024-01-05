@@ -41,7 +41,7 @@ module datapath(
 	//mem stage
 	input wire memtoregM,
 	input wire regwriteM,
-	output wire[31:0] aluoutM,writedataM,
+	output wire[31:0] aluoutM,writedata2M,
 	input wire[31:0] readdataM,
 	output wire [3:0] memwriteM,
 	//writeback stage
@@ -77,6 +77,7 @@ module datapath(
 	wire [4:0] writeregM;
 	wire [5:0] alucontrolM;
 	wire overflowM;
+	wire [31:0] writedataM;
 	//writeback stage
 	wire [4:0] writeregW;
 	wire [31:0] aluoutW,readdataW,lwresultW,resultW;
@@ -190,6 +191,7 @@ module datapath(
 //	lsaddr ls_addr(aluoutM,alucontrolM,laddrerrM,saddrerrM);
     smem swsel(aluoutM,alucontrolM,memwriteM);
 
+    writedatasel writedata(writedataM,alucontrolM,writedata2M);
 	//writeback stage
 	flopr #(32) r1W(clk,rst,aluoutM,aluoutW);
 	flopr #(32) r2W(clk,rst,readdataM,readdataW);
