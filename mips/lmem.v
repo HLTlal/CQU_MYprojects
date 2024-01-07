@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `include "defines2.vh"
 module lmem(
-//    input wire laddrerrM,
+    input wire laddrerrM,
     input wire [31:0] aluoutW,
     input [5:0] alucontrolW,
     input [31:0] lwresultW,
@@ -9,7 +9,7 @@ module lmem(
     );
 
     always@ (*) begin
-//    if(~laddrerrM) begin
+    if(~laddrerrM) begin
         case(alucontrolW)
             `LB_CONTROL: case(aluoutW[1:0])
                 2'b11: resultW = {{24{lwresultW[7]}},lwresultW[7:0]};
@@ -38,5 +38,5 @@ module lmem(
         default: resultW = lwresultW;
         endcase
     end
-//    end
+    end
 endmodule

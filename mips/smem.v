@@ -21,15 +21,15 @@
 
 `include "defines2.vh"
 module smem(
-//    input wire saddrerrM,
+    input wire saddrerrM,
     input [31:0] addressE,
     input [5:0] alucontrolE,
     output reg [3:0] memwriteE
     );
     always@ (*) begin
-//    if(saddrerrM) 
-//         memwriteE <= 4'b0000;
-//    else begin    
+    if(saddrerrM) 
+         memwriteE <= 4'b0000;
+    else begin    
         case(alucontrolE)
             `SB_CONTROL: begin
                 case(addressE[1:0])
@@ -56,5 +56,5 @@ module smem(
             default: memwriteE <= 4'b0000;       
         endcase
     end
-//    end
+    end
 endmodule
