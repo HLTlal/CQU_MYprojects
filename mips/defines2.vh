@@ -91,7 +91,7 @@
 `define SW  6'b101011
 
 `define SYSCALL 6'b001100//funct
-`define BREAK 6'b001101//funct
+`define breakM 6'b001101//funct
    
 `define ERET 32'b01000010000000000000000000011000
 

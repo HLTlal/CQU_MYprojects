@@ -8,25 +8,25 @@ module cp0_reg(
 	input wire we_i,
 	input[4:0] waddr_i,
 	input[4:0] raddr_i,
-	input[`RegBus] data_i,//Ð´Êý¾Ý
+	input[`RegBus] data_i,//Ð´ï¿½ï¿½ï¿½ï¿½
 
-	input wire[5:0] int_i,//Ã¿Ò»Î»¶ÔÓ¦Ò»¸öÓ²¼þÖÐ¶Ï
+	input wire[5:0] int_i,//Ã¿Ò»Î»ï¿½ï¿½Ó¦Ò»ï¿½ï¿½Ó²ï¿½ï¿½ï¿½Ð¶ï¿½
 
 	input wire[`RegBus] excepttype_i,
 	input wire[`RegBus] current_inst_addr_i,
 	input wire is_in_delayslot_i,
 	input wire[`RegBus] bad_addr_i,
 
-	output wire[`RegBus] count_o,//9,µ½32ÖØÐÂ¼ÆÊý
-	output reg [`RegBus] data_o,//¶ÁÊý¾Ý
-	output reg [`RegBus] compare_o,//11£¬ÓëcountÖµÏàÍ¬Ê±¶¨Ê±ÖÐ¶Ï
+	output wire[`RegBus] count_o,//9,ï¿½ï¿½32ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½
+	output reg [`RegBus] data_o,//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	output reg [`RegBus] compare_o,//11ï¿½ï¿½ï¿½ï¿½countÖµï¿½ï¿½Í¬Ê±ï¿½ï¿½Ê±ï¿½Ð¶ï¿½
 	output reg [`RegBus] status_o,//12
-	output reg [`RegBus] cause_o,//13,¼ÇÂ¼ÉÏÒ»´ÎÒì³£Ô­Òò
-	output reg [`RegBus] epc_o,//14Òì³£·µ»ØµØÖ·
+	output reg [`RegBus] cause_o,//13,ï¿½ï¿½Â¼ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ì³£Ô­ï¿½ï¿½
+	output reg [`RegBus] epc_o,//14ï¿½ì³£ï¿½ï¿½ï¿½Øµï¿½Ö·
 	output reg [`RegBus] config_o,
 	output reg [`RegBus] prid_o,
 	output reg [`RegBus] badvaddr,
-	output reg           timer_int_o//ÊÇ·ñ¶¨Ê±ÖÐ¶Ï
+	output reg           timer_int_o//ï¿½Ç·ï¿½Ê±ï¿½Ð¶ï¿½
     );
 
 	reg[32:0] count;
@@ -47,7 +47,7 @@ module cp0_reg(
 			cause_o[15:10] <= int_i;
 			if(compare_o != `ZeroWord && count_o == compare_o) begin
 				/* code */
-				timer_int_o <= `InterruptAssert;//Ê±ÖÓÖÐ¶Ï·¢Éú
+				timer_int_o <= `InterruptAssert;//Ê±ï¿½ï¿½ï¿½Ð¶Ï·ï¿½ï¿½ï¿½
 			end
 			if(we_i == `WriteEnable) begin
 				/* code */
@@ -74,7 +74,7 @@ module cp0_reg(
 				endcase
 			end
 			case (excepttype_i)
-				32'h00000001:begin // Íâ²¿ÖÐ¶Ï
+				32'h00000001:begin // ï¿½â²¿ï¿½Ð¶ï¿½
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -124,7 +124,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01000;
 				end
-				32'h00000009:begin // BREAK
+				32'h00000009:begin // breakM
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -136,7 +136,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01001;
 				end
-				32'h0000000a:begin //ÎÞÐ§Ö¸Áî
+				32'h0000000a:begin //ï¿½ï¿½Ð§Ö¸ï¿½ï¿½
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -148,7 +148,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01010;
 				end
-				32'h0000000c:begin // ALUËãÊõÒç³ö
+				32'h0000000c:begin // ALUï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -160,7 +160,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01100;
 				end
-				32'h0000000d:begin // è‡ªé™·æŒ‡ä»¤ï¼ˆä¸åœ?57æ¡ä¸­ï¼?
+				32'h0000000d:begin // è‡ªé™·æŒ‡ä»¤ï¼ˆä¸ï¿½?57æ¡ä¸­ï¿½?
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;

@@ -45,7 +45,7 @@ module excepttype(
 			end
 			else if(exceptM[0])	excepttype <= 32'h0000000e;//eret
 			else if(exceptM[1])	excepttype <= 32'h00000008;//sys
-			else if(exceptM[2])	excepttype <= 32'h00000009;//break
+			else if(exceptM[2])	excepttype <= 32'h00000009;//breakM
 			else if(exceptM[3])	excepttype <= 32'h0000000a;//re
 			else if(exceptM[4])	excepttype <= 32'h0000000c;//ov
 			else if(exceptM[5]) begin //ades

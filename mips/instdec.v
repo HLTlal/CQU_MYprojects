@@ -70,7 +70,7 @@ module instdec(
                         `JALR: ascii<= "JALR";
                         
                         `SYSCALL: ascii<= "SYSC";
-                        `BREAK: ascii<= "BRE";
+                        `breakM: ascii<= "BRE";
                         default: ascii<="N-R";
                     endcase
                 end
