@@ -29,6 +29,7 @@ module writedatasel(
         case (alucontrolM)
             `SB_CONTROL: writedata2M <= {{writedataM[7:0]},{writedataM[7:0]},{writedataM[7:0]},{writedataM[7:0]}};
             `SH_CONTROL: writedata2M <= {{writedataM[15:0]},{writedataM[15:0]}};
+            `SW_CONTROL:writedata2M <= writedataM[31:0];
             default: writedata2M <= writedataM;
         endcase
     end

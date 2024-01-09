@@ -88,7 +88,7 @@ module datapath(
 	wire [31:0] pcM;
 	wire [5:0] alucontrolM;
 	wire overflowM,indelayslotM,laddrerrM,saddrerrM;
-	wire [31:0] writedataM,aluoutM;
+	wire [31:0] writedataM,aluoutM,srcbM;
 	wire [6:0] exceptM;
 	wire [31:0] excepttype_i,bad_addr_i,count_o,cp0rdataM,compare_o,status_o,cause_o,epc_o,config_o,prid_o,badvaddr;
 	wire timer_int_o;
@@ -129,7 +129,7 @@ module datapath(
 	mux2 #(32) pcmux(pcnextbrFD,
 		{pcplus4D[31:28],instrD[25:0],2'b00},
 		jumpD | jalD,pcnext_tempFD);//pcnext or jump
-	mux2 #(32) pcjrmux(pcnext_tempFD,srca2D,jrD,pcnextFD);	//�Ƿ�Ĵ�����ַ
+	mux2 #(32) pcjrmux(pcnext_tempFD,srca2D,jrD,pcnextFD);	//�Ƿ�Ĵ������?
 
 	//regfile (operates in decode and writeback)
 	regfile rf(clk,regwriteW,rsD,rtD,writeregW,resultW,srcaD,srcbD);
@@ -137,7 +137,7 @@ module datapath(
 	//fetch stage logic
 	pc #(32) pcreg(clk,rst,~stallF,flushF,pcnextFD,newpc,pcF);//PC'-->PCF
 	
-	adder pcadd1(pcF,32'b100,pcplus4F);//˳���ȡ
+	adder pcadd1(pcF,32'b100,pcplus4F);//˳����?
 	adder pcadd12(pcF,32'b1000,pcplus8F);//jal,jalr,BLTZAL��BGEZAL
 	
 	assign indelayslotF=jumpD|jalD|jrD|branchD;
@@ -211,17 +211,18 @@ module datapath(
 	floprc #(5) 	r7M(clk,rst,flushM,exceptE[4:0],exceptM[4:0]);
 	floprc #(32) r8M(clk,rst,flushM,pcE,pcM);
 	floprc #(5) r9M(clk,rst,flushM,rdE,rdM);
+	floprc #(32) r10M(clk,rst,flushM,srcb3E,srcbM);
 	
 //	flopr #(32) r5M(clk,rst,lo_outE,lo_outM);
     mux2 #(32) cp0mux(aluoutM,cp0rdataM,mfc0M,aluout2M);
 	lsaddr ls_addr(aluout2M,alucontrolM,laddrerrM,saddrerrM);
     smem swsel(saddrerrM,aluout2M,alucontrolM,memwriteM);
-    writedatasel writedata(writedataM,alucontrolM,writedata2M);
+    writedatasel writedata(writedataM,alucontrolM,writedata2M);//
     assign exceptM[6:5]={laddrerrM,saddrerrM};
     
     excepttype excepttypei(rst,pcM,exceptM,status_o,cause_o,aluout2M,excepttype_i,bad_addr_i);
     
-    cp0_reg cp0reg(clk, rst,mtc0_weM,rdM,rdM,writedataM,6'd0,excepttype_i,pcM, indelayslotM,bad_addr_i,
+    cp0_reg cp0reg(clk, rst,mtc0_weM,rdM,rdM,srcbM,6'd0,excepttype_i,pcM, indelayslotM,bad_addr_i,
             count_o,cp0rdataM,compare_o,status_o,cause_o,epc_o,config_o,prid_o,badvaddr,timer_int_o);
             
 	//writeback stage
