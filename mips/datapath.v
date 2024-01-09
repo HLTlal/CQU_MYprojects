@@ -104,7 +104,6 @@ module datapath(
 		//decode stage
 		rsD,rtD,
 		branchD,jumpD,jrD,
-		alucontrolD,
 		forwardaD,forwardbD,jrlforwardaD,jrlforwardbD,
 		stallD,flushD,
 		//execute stage
@@ -117,7 +116,7 @@ module datapath(
 		//mem stage
 		writeregM,
 		regwriteM,
-		memtoregM,alucontrolM,
+		memtoregM,
 		excepttype_i,flushM,epc_o,
 		//write back stage
 		writeregW,
@@ -129,7 +128,7 @@ module datapath(
 	mux2 #(32) pcmux(pcnextbrFD,
 		{pcplus4D[31:28],instrD[25:0],2'b00},
 		jumpD | jalD,pcnext_tempFD);//pcnext or jump
-	mux2 #(32) pcjrmux(pcnext_tempFD,srca2D,jrD,pcnextFD);	//ï¿½Ç·ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+	mux2 #(32) pcjrmux(pcnext_tempFD,srca2D,jrD,pcnextFD);	//ÊÇ·ñ¼Ä´æÆ÷µØÖ·
 
 	//regfile (operates in decode and writeback)
 	regfile rf(clk,regwriteW,rsD,rtD,writeregW,resultW,srcaD,srcbD);
@@ -137,8 +136,8 @@ module datapath(
 	//fetch stage logic
 	pc #(32) pcreg(clk,rst,~stallF,flushF,pcnextFD,newpc,pcF);//PC'-->PCF
 	
-	adder pcadd1(pcF,32'b100,pcplus4F);//Ë³ï¿½ï¿½ï¿½È¡
-	adder pcadd12(pcF,32'b1000,pcplus8F);//jal,jalr,BLTZALï¿½ï¿½BGEZAL
+	adder pcadd1(pcF,32'b100,pcplus4F);//Ë³Ðò¶ÁÈ¡
+	adder pcadd12(pcF,32'b1000,pcplus8F);//jal,jalr,BLTZAL¡¢BGEZAL
 	
 	assign indelayslotF=jumpD|jalD|jrD|branchD;
 	
@@ -182,22 +181,22 @@ module datapath(
 	mux3 #(32) forwardaemux(srcaE,resultW,aluout2M,forwardaE,srca2E);
 	mux3 #(32) forwardbemux(srcbE,resultW,aluout2M,forwardbE,srcb2E);
 	
-	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);//aluï¿½ï¿½bï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½regfile
+	mux2 #(32) srcbmux(srcb2E,signimmE,alusrcE,srcb3E);//aluµÄbµÄÀ´Ô´ÓÚÁ¢¼´Êý»¹ÊÇregfile
 	assign writeregE=(regwriteE==1 & regdstE==0) ? rtE :
 	                               (regwriteE==1 & regdstE==1) ? rdE : 5'b00000;
-	//Ð´ï¿½ï¿½regfileï¿½Äµï¿½Ö·Îªrdï¿½ï¿½Rtypeï¿½ï¿½
-	//ï¿½ï¿½ï¿½ï¿½rtï¿½ï¿½lb,lbu,lh,lhu,lw,sb,sh,sw,andi,xori,ori,lui,addi,addiu,slti,sltiuï¿½ï¿½
-	//writeregï¿½ï¿½ÒªÐ´ï¿½ï¿½regfileï¿½Ä¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+	//Ð´µ½regfileµÄµØÖ·Îªrd£¨Rtype£©
+	//»¹ÊÇrt£¨lb,lbu,lh,lhu,lw,sb,sh,sw,andi,xori,ori,lui,addi,addiu,slti,sltiu£©
+	//writeregÊÇÒªÐ´ÈëregfileµÄ¼Ä´æÆ÷µØÖ·
 	
 	alu alu(srca2E,srcb3E,alucontrolE,saE,hi_oE,lo_oE,hi_outE,lo_outE,aluoutE,overflowE);
 	assign exceptE[4]=overflowE;
-	//ï¿½ï¿½ï¿½ï¿½
+	//³ý·¨
 	assign div_sign=(alucontrolE==`DIV_CONTROL)? 1'b1:1'b0;
 	assign div_start=((alucontrolE==`DIV_CONTROL | alucontrolE==`DIVU_CONTROL )& ~div_ready) ? 1'b1:1'b0;
 	div div(clk,rst,div_sign,srca2E,srcb3E,div_start,1'b0,div_result,div_ready);	
-    hilo_reg hilom(clk,rst,~flushE,div_ready,alucontrolE,div_result,hi_outE,lo_outE,hi_oE,lo_oE );//Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½hi_lo_o
-    //Ð´ï¿½Ä´ï¿½ï¿½ï¿½
-    assign jalwriteregE=(alucontrolE==`JALR_CONTROL & writeregE==0) ? 5'b11111: writeregE;//jalrï¿½ï¿½rdÄ¬ï¿½ï¿½Îª0ï¿½ï¿½Îª31ï¿½Å¼Ä´ï¿½ï¿½ï¿½
+    hilo_reg hilom(clk,rst,~flushE,div_ready,alucontrolE,div_result,hi_outE,lo_outE,hi_oE,lo_oE );//Ñ¡ÔñÊä³öhi_lo_o
+    //Ð´¼Ä´æÆ÷
+    assign jalwriteregE=(alucontrolE==`JALR_CONTROL & writeregE==0) ? 5'b11111: writeregE;//jalrµÄrdÄ¬ÈÏÎª0ÔòÎª31ºÅ¼Ä´æÆ÷
     mux2 #(5) jalwrmux(jalwriteregE,5'b11111,jalE|balE,writereg2E);
     mux2 #(32) wrdmux(aluoutE,pcplus8E,jalE|jrE|balE,aluout2E);
     
@@ -232,7 +231,7 @@ module datapath(
 	floprc #(1) r5W(clk,rst,flushW,laddrerrM,laddrerrW);
 	floprc #(32) r6W(clk,rst,flushW,pcM,pcW);
 	
-	mux2 #(32) resmux(aluoutW,readdataW,memtoregW,lwresultW);//ï¿½ï¿½ï¿½ï¿½Result ï¿½ï¿½Ô´Îª ALU ï¿½ï¿½ï¿½ï¿½ï¿½Ý´æ´¢ï¿½ï¿½
+	mux2 #(32) resmux(aluoutW,readdataW,memtoregW,lwresultW);//¿ØÖÆResult À´Ô´Îª ALU »òÊý¾Ý´æ´¢Æ÷
     lmem lwsel(laddrerrW,aluoutW,alucontrolW,lwresultW,resultW);
     
     

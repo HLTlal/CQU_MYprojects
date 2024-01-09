@@ -27,7 +27,6 @@ module hazard(
 	//decode stage
 	input wire[4:0] rsD,rtD,
 	input wire branchD,jumpD,jrD,
-	input wire [5:0] alucontrolD,
 	output wire forwardaD,forwardbD,jrlforwardaD,jrlforwardbD,
 	output wire stallD,flushD,
 	//execute stage
@@ -43,7 +42,6 @@ module hazard(
 	input wire[4:0] writeregM,
 	input wire regwriteM,
 	input wire memtoregM,
-    input wire [5:0] alucontrolM,
     input wire [31:0] excepttype,
     output wire flushM,
     input wire [31:0] epc,
@@ -55,7 +53,7 @@ module hazard(
     
 	wire lwstallD,branchstallD,divstallE,jrstall;
 	
-	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â£¨ï¿½ï¿½ï¿½Ð¶Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½Ö·Í³Ò»Îª 0xBFC00380
+	//ËùÓÐÀýÍâ£¨º¬ÖÐ¶Ï£©µÄÀýÍâÈë¿ÚµØÖ·Í³Ò»Îª 0xBFC00380
 	always@(*) begin   
         if(excepttype!=32'b0)
         begin 
@@ -98,23 +96,23 @@ module hazard(
 	end
 
 	//stalls
-	assign  lwstallD = memtoregE & (rtE == rsD | rtE == rtD);
-	assign  branchstallD = branchD & (regwriteE & 
+	assign #1 lwstallD = memtoregE & (rtE == rsD | rtE == rtD);
+	assign #1 branchstallD = branchD & (regwriteE & 
 				(writeregE == rsD | writeregE == rtD) | memtoregM &
 				(writeregM == rsD | writeregM == rtD));
-	assign  divstallE=((alucontrolE==`DIV_CONTROL)|(alucontrolE==`DIVU_CONTROL))
+	assign #1 divstallE=((alucontrolE==`DIV_CONTROL)|(alucontrolE==`DIVU_CONTROL))
 	                                   &(~div_ready);
 	assign jrstall = jrD && regwriteE && (writeregE==rsD);
 	
-	assign  stallD = lwstallD | branchstallD|divstallE | jrstall;
-	assign  stallF = stallD;
-	assign  stallE = divstallE;
+	assign #1 stallD = lwstallD | branchstallD|divstallE | jrstall;
+	assign #1 stallF = stallD;
+	assign #1 stallE = divstallE;
 		//stalling D stalls all previous stages
-	assign  flushF =(excepttype!=32'b0);
-	assign  flushD =(excepttype!=32'b0);
-	assign  flushE = lwstallD | branchstallD | (excepttype!=32'b0);
-	assign  flushM =(excepttype!=32'b0);
-	assign  flushW =(excepttype!=32'b0);
+	assign #1 flushF =(excepttype!=32'b0);
+	assign #1 flushD =(excepttype!=32'b0);
+	assign #1 flushE = lwstallD | branchstallD | (excepttype!=32'b0);
+	assign #1 flushM =(excepttype!=32'b0);
+	assign #1 flushW =(excepttype!=32'b0);
 		//stalling D flushes next stage
 	// Note: not necessary to stall D stage on store
   	//       if source comes from load;
