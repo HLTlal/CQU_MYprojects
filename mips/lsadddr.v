@@ -26,6 +26,8 @@ module lsaddr(
     output reg laddrerrM,saddrerrM
     );
     always@(*) begin
+        laddrerrM = 1'b0;
+        saddrerrM = 1'b0;
         case (alucontrolM)
             `LH_CONTROL: if (addrs[0] != 1'b0 ) begin
                 laddrerrM = 1'b1;

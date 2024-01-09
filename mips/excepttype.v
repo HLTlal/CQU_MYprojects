@@ -50,10 +50,10 @@ module excepttype(
 			else if(exceptM[4])	excepttype <= 32'h0000000c;//ov
 			else if(exceptM[5]) begin //ades
 				excepttype <= 32'h00000005;
-				bad_addr<=aluoutM;	
-			end else	begin
-			    excepttype <= 32'h00000000;
-			    bad_addr<=32'h00000000;
+				bad_addr<=aluoutM;
+			end else begin	
+			excepttype <= 32'h00000000;
+			bad_addr<=32'h00000000;
 			end
 		end
 	end

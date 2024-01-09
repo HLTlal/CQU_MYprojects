@@ -97,6 +97,8 @@ module maindec(//id.v
                             controls <= 16'b0000000000000010;//mtc0
                     else if (instrD[25:21]==5'b00000 && instrD[10:3]==8'b00000000)
                             controls <= 16'b1000000000000001;//mfc0
+                    else
+                            controls <= 16'b00000000001000;//illegal op
              end
 			default:  controls <= 16'b00000000001000;//illegal op
 		endcase

@@ -35,18 +35,18 @@ module mips(
 	//decode stage
 	wire [5:0] opD,functD;
 	wire [4:0] rtD;
-	wire pcsrcD,branchD,jumpD,jalD,jrD,balD,equalD,breakD,syscallD,reserveD,eretD;
+	wire stallD,pcsrcD,branchD,jumpD,jalD,jrD,balD,equalD,breakD,syscallD,reserveD,eretD;
 	wire [5:0] alucontrolD;
 	wire [31:0] instrD;
 	//execute stage	
-	wire flushE;	
+	wire flushE,stallE;	
 	wire regdstE,alusrcE,hilo_enE,jumpE,jalE,jrE,balE,
 	memtoregE,regwriteE;
 	wire [5:0] alucontrolE;
 	//mem stage
-	wire memtoregM,regwriteM,mtc0_weM,mfc0M;
+	wire memtoregM,regwriteM,mtc0_weM,mfc0M,flushM;
 	//writeback stage
-	wire memtoregW,no_dcache;
+	wire memtoregW,no_dcache,flushW;
 	wire [31:0] pcF,aluoutM;
 
     mmu m(

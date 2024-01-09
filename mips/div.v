@@ -22,8 +22,8 @@ module div(
 	reg[31:0] divisor;	//���� 
 	reg[31:0] temp_op1;
 	reg[31:0] temp_op2;
-	reg[31:0] regop1;
-	reg[31:0] regop2;
+	reg[31:0] reg_op1;
+	reg[31:0] reg_op2;
 	
 	assign div_temp = {1'b0,dividend[63:32]} - {1'b0,divisor};//minuend-n
 
@@ -54,8 +54,8 @@ module div(
 		  			    dividend <= {`ZeroWord,`ZeroWord};
                         dividend[32:1] <= temp_op1;
                         divisor <= temp_op2;
-						regop1<= opdata1_i;
-						regop2<= opdata2_i;
+						reg_op1 <= opdata1_i;
+			  			reg_op2 <= opdata2_i;
                     end
                 end else begin//û�п�ʼ����
 						ready_o <= `DivResultNotReady;
@@ -76,10 +76,10 @@ module div(
                         end
                         cnt <= cnt + 1;
                     end else begin//cnt=32����������
-                        if((signed_div_i == 1'b1) && ((regop1[31] ^ regop2[31]) == 1'b1)) begin
+                        if((signed_div_i == 1'b1) && ((reg_op1[31] ^ reg_op2[31]) == 1'b1)) begin
                             dividend[31:0] <= (~dividend[31:0] + 1);
                         end
-                        if((signed_div_i == 1'b1) && ((regop1[31] ^ dividend[64]) == 1'b1)) begin              
+                        if((signed_div_i == 1'b1) && ((reg_op1[31] ^ dividend[64]) == 1'b1)) begin              
                             dividend[64:33] <= (~dividend[64:33] + 1);
                         end
                         state <= `DivEnd;
