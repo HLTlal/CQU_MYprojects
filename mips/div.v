@@ -5,23 +5,25 @@ module div(
 	input wire clk,
 	input wire rst,
 	
-	input wire signed_div_i,//ÊÇ·ñÓÐ·ûºÅÔËËã
+	input wire signed_div_i,//ï¿½Ç·ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	input wire[31:0]  opdata1_i,
 	input wire[31:0]	opdata2_i,
 	input wire  start_i,
-	input wire  annul_i,//ÊÇ·ñÈ¡Ïû³ý·¨ÔËËã
+	input wire  annul_i,//ï¿½Ç·ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	
 	output reg[63:0]  result_o,
 	output reg	ready_o
 );
 
-	wire[32:0] div_temp;//ÔÝÊ±½á¹û
-	reg[5:0] cnt;//ÊÔÉÌµÄÂÖ´Î£¬32Ê±½áÊø
-	reg[64:0] dividend;//[62:32]ÊÇÃ¿´Îµü´úµÄ±»¼õÊý£¬[31:0]ÊÇ±»³ýÊýºÍÖÐ¼ä½á¹û
+	wire[32:0] div_temp;//ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
+	reg[5:0] cnt;//ï¿½ï¿½ï¿½Ìµï¿½ï¿½Ö´Î£ï¿½32Ê±ï¿½ï¿½ï¿½ï¿½
+	reg[64:0] dividend;//[62:32]ï¿½ï¿½Ã¿ï¿½Îµï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[31:0]ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½
 	reg[1:0] state;
-	reg[31:0] divisor;	//³ýÊý 
+	reg[31:0] divisor;	//ï¿½ï¿½ï¿½ï¿½ 
 	reg[31:0] temp_op1;
 	reg[31:0] temp_op2;
+	reg[31:0] regop1;
+	reg[31:0] regop2;
 	
 	assign div_temp = {1'b0,dividend[63:32]} - {1'b0,divisor};//minuend-n
 
@@ -40,7 +42,7 @@ module div(
 		  				state <= `DivOn;
 		  				cnt <= 6'b000000;
 		  				if(signed_div_i == 1'b1 && opdata1_i[31] == 1'b1 ) begin
-		  					temp_op1 = ~opdata1_i + 1;//²¹Âë
+		  					temp_op1 = ~opdata1_i + 1;//ï¿½ï¿½ï¿½ï¿½
 		  				end else begin
 		  					temp_op1 = opdata1_i;
 		  				end
@@ -52,8 +54,10 @@ module div(
 		  			    dividend <= {`ZeroWord,`ZeroWord};
                         dividend[32:1] <= temp_op1;
                         divisor <= temp_op2;
+						regop1<= opdata1_i;
+						regop2<= opdata2_i;
                     end
-                end else begin//Ã»ÓÐ¿ªÊ¼³ý·¨
+                end else begin//Ã»ï¿½Ð¿ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
 						ready_o <= `DivResultNotReady;
 						result_o <= {`ZeroWord,`ZeroWord};
 				end          	
@@ -65,28 +69,28 @@ module div(
 		  	`DivOn:				begin               //DivOn×´Ì¬
 		  		if(annul_i == 1'b0) begin
 		  			if(cnt != 6'b100000) begin
-                        if(div_temp[32] == 1'b1) begin//ÊÔÉÌÐ¡ÓÚ0
-                            dividend <= {dividend[63:0] , 1'b0};//0000...0±»¼õÊýÖÐ¼ä½á¹û£¬×óÒÆÒ»Î»±»¼õÊý¼ÓÒ»Î»£¬Í¬Ê±×îµÍÎ»¼Ó½á¹û
+                        if(div_temp[32] == 1'b1) begin//ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½0
+                            dividend <= {dividend[63:0] , 1'b0};//0000...0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Î»ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½Î»ï¿½Ó½ï¿½ï¿½
                         end else begin
-                            dividend <= {div_temp[31:0] , dividend[31:0] , 1'b1};//¼õµÄÓàÊý£¬Ê£ÏÂµÄ±»¼õÊý£¬ÖÐ¼äÉÌ
+                            dividend <= {div_temp[31:0] , dividend[31:0] , 1'b1};//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê£ï¿½ÂµÄ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½
                         end
                         cnt <= cnt + 1;
-                    end else begin//cnt=32£¬³ý·¨½áÊø
-                        if((signed_div_i == 1'b1) && ((opdata1_i[31] ^ opdata2_i[31]) == 1'b1)) begin
+                    end else begin//cnt=32ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                        if((signed_div_i == 1'b1) && ((regop1[31] ^ regop2[31]) == 1'b1)) begin
                             dividend[31:0] <= (~dividend[31:0] + 1);
                         end
-                        if((signed_div_i == 1'b1) && ((opdata1_i[31] ^ dividend[64]) == 1'b1)) begin              
+                        if((signed_div_i == 1'b1) && ((regop1[31] ^ dividend[64]) == 1'b1)) begin              
                             dividend[64:33] <= (~dividend[64:33] + 1);
                         end
                         state <= `DivEnd;
                         cnt <= 6'b000000;            	
                     end
-		  		end else begin//annul_iÎª1£¬Ö±½Ó½áÊø
+		  		end else begin//annul_iÎª1ï¿½ï¿½Ö±ï¿½Ó½ï¿½ï¿½ï¿½
 		  			state <= `DivFree;
 		  		end	
 		  	end
 		  	`DivEnd:			begin               //DivEnd×´Ì¬
-        	    result_o <= {dividend[64:33], dividend[31:0]};  //ÓàÊý£¬ÉÌ
+        	    result_o <= {dividend[64:33], dividend[31:0]};  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 ready_o <= `DivResultReady;
                 if(start_i == `DivStop) begin
           	        state <= `DivFree;

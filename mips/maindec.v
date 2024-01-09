@@ -86,17 +86,17 @@ module maindec(//id.v
                     `JALR:controls <= 16'b1100000100000000;//JALR
                     `JR:controls <= 16'b0000000100000000;//JR
                     //breakM and syscall
-                    `SYSCALL :controls <= 16'b0000000100100000;//syscall
-                    `breakM :controls <= 16'b0000000100010000;//breakM
+                    `SYSCALL :controls <= 16'b0000000000010000;//syscall
+                    `breakM :controls <= 16'b0000000000100000;//breakM
 			        default:controls <= 16'b1100000000000000;//R-TYPE     
              endcase 
              `SPECIAL3_INST: begin
                     if(instrD==`ERET)
-                            controls <= 16'b0000000100000100;//eret
+                            controls <= 16'b0000000000000100;//eret
                     else if (instrD[25:21]==5'b00100 && instrD[10:3]==8'b00000000)
-                            controls <= 16'b0000000100000010;//mtc0
+                            controls <= 16'b0000000000000010;//mtc0
                     else if (instrD[25:21]==5'b00000 && instrD[10:3]==8'b00000000)
-                            controls <= 16'b1000000100000001;//mfc0
+                            controls <= 16'b1000000000000001;//mfc0
              end
 			default:  controls <= 16'b00000000001000;//illegal op
 		endcase
