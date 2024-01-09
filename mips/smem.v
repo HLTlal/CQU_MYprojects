@@ -46,10 +46,8 @@ module smem(
             end    
             `SH_CONTROL: begin
                 case(addressE[1:0])
-                     2'b10: memwriteE <= 4'b1100;
-                     2'b00: memwriteE <= 4'b0011;
-//                    2'b00: memwriteE <= 4'b1100;
-//                    2'b10: memwriteE <= 4'b0011;
+                    2'b10: memwriteE <= 4'b1100;
+                    2'b00: memwriteE <= 4'b0011;
                     default: memwriteE <= 4'b0000;
                 endcase
             end
