@@ -22,7 +22,7 @@
 `include "defines2.vh"
 module lsaddr(
     input [31:0] addrs,
-    input [7:0] alucontrolM,
+    input [5:0] alucontrolM,
     output reg laddrerrM,saddrerrM
     );
     always@(*) begin

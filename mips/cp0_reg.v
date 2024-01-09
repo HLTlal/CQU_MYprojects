@@ -8,25 +8,25 @@ module cp0_reg(
 	input wire we_i,
 	input[4:0] waddr_i,
 	input[4:0] raddr_i,
-	input[`RegBus] data_i,
+	input[`RegBus] data_i,//д����
 
-	input wire[5:0] int_i,
+	input wire[5:0] int_i,//ÿһλ��Ӧһ��Ӳ���ж�
 
 	input wire[`RegBus] excepttype_i,
 	input wire[`RegBus] current_inst_addr_i,
 	input wire is_in_delayslot_i,
 	input wire[`RegBus] bad_addr_i,
 
-	output wire[`RegBus] count_o,
-	output reg [`RegBus] data_o,
-	output reg [`RegBus] compare_o,
-	output reg [`RegBus] status_o,
-	output reg [`RegBus] cause_o,
-	output reg [`RegBus] epc_o,
+	output wire[`RegBus] count_o,//9,��32���¼���
+	output reg [`RegBus] data_o,//������
+	output reg [`RegBus] compare_o,//11����countֵ��ͬʱ��ʱ�ж�
+	output reg [`RegBus] status_o,//12
+	output reg [`RegBus] cause_o,//13,��¼��һ���쳣ԭ��
+	output reg [`RegBus] epc_o,//14�쳣���ص�ַ
 	output reg [`RegBus] config_o,
 	output reg [`RegBus] prid_o,
 	output reg [`RegBus] badvaddr,
-	output reg           timer_int_o
+	output reg           timer_int_o//�Ƿ�ʱ�ж�
     );
 
 	reg[32:0] count;
@@ -47,7 +47,7 @@ module cp0_reg(
 			cause_o[15:10] <= int_i;
 			if(compare_o != `ZeroWord && count_o == compare_o) begin
 				/* code */
-				timer_int_o <= `InterruptAssert;
+				timer_int_o <= `InterruptAssert;//ʱ���жϷ���
 			end
 			if(we_i == `WriteEnable) begin
 				/* code */
@@ -74,7 +74,7 @@ module cp0_reg(
 				endcase
 			end
 			case (excepttype_i)
-				32'h00000001:begin // 中断（其实写入的cause�?0�?
+				32'h00000001:begin // �ⲿ�ж�
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -86,7 +86,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b00000;
 				end
-				32'h00000004:begin // 取指非对齐或Load非对�?
+				32'h00000004:begin // adel
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -99,7 +99,7 @@ module cp0_reg(
 					cause_o[6:2] <= 5'b00100;
 					badvaddr <= bad_addr_i;
 				end
-				32'h00000005:begin // Store非对�?
+				32'h00000005:begin // ades
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -112,7 +112,7 @@ module cp0_reg(
 					cause_o[6:2] <= 5'b00101;
 					badvaddr <= bad_addr_i;
 				end
-				32'h00000008:begin // Syscall异常
+				32'h00000008:begin // Syscall
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -124,7 +124,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01000;
 				end
-				32'h00000009:begin // BREAK异常
+				32'h00000009:begin // breakM
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -136,7 +136,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01001;
 				end
-				32'h0000000a:begin // 保留指令（译码失败）
+				32'h0000000a:begin //��Чָ��
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -148,7 +148,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01010;
 				end
-				32'h0000000c:begin // ALU溢出异常
+				32'h0000000c:begin // ALU�������
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -160,7 +160,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01100;
 				end
-				32'h0000000d:begin // 自陷指令（不�?57条中�?
+				32'h0000000d:begin // 自陷指令（不�?57条中�?
 					if(is_in_delayslot_i == `InDelaySlot) begin
 						/* code */
 						epc_o <= current_inst_addr_i - 4;
@@ -172,7 +172,7 @@ module cp0_reg(
 					status_o[1] <= 1'b1;
 					cause_o[6:2] <= 5'b01101;
 				end
-				32'h0000000e:begin // eret异常（准确说不叫异常，但通过这个在跳转到epc的同时清零status的EXL�?
+				32'h0000000e:begin // eret
 					status_o[1] <= 1'b0;
 				end
 				default : /* default */;
