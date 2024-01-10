@@ -80,9 +80,9 @@ module alu(//ex.v
             `SRAV_CONTROL: begin y_temp= { {32{b[31]}},b[31:0]} >> a[4:0];  
                                           y=y_temp[31:0];   overflow = 0; end  //srav
             //Arithmetic
-            `ADD_CONTROL: begin y= y_sum;    overflow =overflow_temp; end  //add 有溢出例外
+            `ADD_CONTROL: begin y<= y_sum;    overflow <=overflow_temp; end  //add 有溢出例外
             `ADDU_CONTROL: y= y_sum; //addu
-            `SUB_CONTROL: begin y= y_sum;    overflow =overflow_temp; end  //sub 有溢出例外
+            `SUB_CONTROL: begin y<= y_sum;    overflow <=overflow_temp; end  //sub 有溢出例外
             `SUBU_CONTROL:  y= y_sum;  //subu
             `SLT_CONTROL: begin y<={31'd0,slt_out} ;  overflow <= 0; end  //slt
             `SLTU_CONTROL: begin y<={31'd0,slt_out};  overflow <= 0; end  //stlu
@@ -106,7 +106,7 @@ module alu(//ex.v
 //            `MFC0_CONTROL
 //            `MTC0_CONTROL 
             
-			default : begin y <= 32'h0; overflow <= 0; hi_out <= hi_in[31:0]; lo_out<=lo_in[31:0];end
+			default : begin y = 32'h0; overflow = 0; hi_out = hi_in[31:0]; lo_out=lo_in[31:0];end
 		endcase	
 	end
 endmodule
