@@ -70,6 +70,8 @@ module maindec(//id.v
              `SB:controls <= 16'b0010000000000000;//SB
              `SH:controls <= 16'b0010000000000000;//SH
              `SW:controls <= 16'b0010000000000000;//SW
+             
+             `RELU:controls <= 16'b1100000000000000;//RELU
 
              `NOP:case(funct)
                     //HILO

@@ -103,6 +103,10 @@ module alu(//ex.v
 			`SB_CONTROL: y= y_sum;
 			`SH_CONTROL: y= y_sum;
 			`SW_CONTROL: y= y_sum;
+			`RELU_CONTROL:begin 
+			                                 if(a[31]!=1)  y=a;
+			                                 else  y=32'h0;
+			                             end
 //            `MFC0_CONTROL
 //            `MTC0_CONTROL 
             

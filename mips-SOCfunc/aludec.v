@@ -67,6 +67,7 @@ module aludec(
 			`SH: alucontrol<=`SH_CONTROL;
 			`SW: alucontrol<=`SW_CONTROL;
 			
+			`RELU:alucontrol<=`RELU_CONTROL;
 			//Invagination
 			//privilege
 			

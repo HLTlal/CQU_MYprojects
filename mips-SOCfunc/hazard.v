@@ -55,8 +55,9 @@ module hazard(
     
 	wire lwstallD,branchstallD,divstallE,jrstall;
 	
-	//�������⣨���жϣ���������ڵ�ַͳһΪ 0xBFC00380
+	//�������⣨���жϣ���������ڵ�ַͳһ�? 0xBFC00380
 	always@(*) begin   
+	   newpc<=32'hbfc00000;
         if(excepttype!=32'b0)
         begin 
             case (excepttype)

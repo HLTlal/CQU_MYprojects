@@ -102,6 +102,10 @@
 `define MTC0 5'b00100//rs
 `define MFC0 5'b00000//rs
 
+`define RELU 6'b111111
+
+
+
 // ALU OP 4bit
 
 `define ANDI_OP 4'b0000
@@ -174,6 +178,8 @@
 
 `define MFC0_CONTROL 	6'b000101
 `define MTC0_CONTROL 	6'b000110
+
+`define RELU_CONTROL   6'b000000
 
 //inst ROM macro definition
 `define InstAddrBus		31:0

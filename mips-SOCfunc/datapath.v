@@ -156,7 +156,7 @@ module datapath(
 	mux2 #(32) forwardbmux(srcbD,aluout2M,forwardbD,srcb2D);
 	mux2 #(32) jrforwardamux(srca2D,readdataM,jrlforwardaD,srca3D);
 	mux2 #(32) jrforwardbmux(srcb2D,readdataM,jrlforwardbD,srcb3D);
-	eqcmp comp(srca3D,srcb3D,alucontrolD,equalD);
+	eqcmp comp(srca3D,srcb3D,opD,rtD,equalD);
 
 	assign opD = instrD[31:26];
 	assign functD = instrD[5:0];
